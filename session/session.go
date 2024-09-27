@@ -1,9 +1,9 @@
-// Package session provider
+// package sessionion provider
 //
 // Usage:
 // import(
 //
-//	"github.com/beego/beego/v2/server/web/session"
+//	"github.com/nbcx/go-session/session"
 //
 // )
 //
@@ -11,7 +11,7 @@
 //	     globalSessions, _ = session.NewManager("memory", `{"cookieName":"gosessionid", "enableSetCookie,omitempty": true, "gclifetime":3600, "maxLifetime": 3600, "secure": false, "cookieLifeTime": 3600, "providerConfig": ""}`)
 //			go globalSessions.GC()
 //		}
-package sess
+package session
 
 import (
 	"context"

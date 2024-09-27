@@ -1,4 +1,4 @@
-package sess
+package session
 
 import (
 	"bytes"
@@ -15,7 +15,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/beego/beego/v2/core/utils"
+	r "math/rand"
 )
 
 func init() {
@@ -59,9 +59,32 @@ func DecodeGob(encoded []byte) (map[interface{}]interface{}, error) {
 func generateRandomKey(strength int) []byte {
 	k := make([]byte, strength)
 	if n, err := io.ReadFull(rand.Reader, k); n != strength || err != nil {
-		return utils.RandomCreateBytes(strength)
+		return randomCreateBytes(strength)
 	}
 	return k
+}
+
+var alphaNum = []byte(`0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`)
+
+// RandomCreateBytes generate random []byte by specify chars.
+func randomCreateBytes(n int, alphabets ...byte) []byte {
+	if len(alphabets) == 0 {
+		alphabets = alphaNum
+	}
+	bytes := make([]byte, n)
+	var randBy bool
+	if num, err := rand.Read(bytes); num != n || err != nil {
+		// r.Seed(time.Now().UnixNano())
+		randBy = true
+	}
+	for i, b := range bytes {
+		if randBy {
+			bytes[i] = alphabets[r.Intn(len(alphabets))]
+		} else {
+			bytes[i] = alphabets[b%byte(len(alphabets))]
+		}
+	}
+	return bytes
 }
 
 // Encryption -----------------------------------------------------------------

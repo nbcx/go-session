@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 	"time"
-	"write/common/go-session/sess"
 
+	"github.com/nbcx/go-session/session"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -135,23 +135,23 @@ func TestStoreSessionReleaseIfPresentAndSessionDestroy(t *testing.T) {
 	}
 }
 
-func setupSessionManager(t *testing.T) (*sess.Manager, error) {
+func setupSessionManager(t *testing.T) (*session.Manager, error) {
 	redisAddr := os.Getenv("REDIS_ADDR")
 	if redisAddr == "" {
 		redisAddr = "127.0.0.1:6379"
 	}
 	redisConfig := fmt.Sprintf("%s,100,,0,30", redisAddr)
 
-	sessionConfig := sess.NewManagerConfig(
-		sess.CfgCookieName(`gosessionid`),
-		sess.CfgSetCookie(true),
-		sess.CfgGcLifeTime(3600),
-		sess.CfgMaxLifeTime(3600),
-		sess.CfgSecure(false),
-		sess.CfgCookieLifeTime(3600),
-		sess.CfgProviderConfig(redisConfig),
+	sessionConfig := session.NewManagerConfig(
+		session.CfgCookieName(`gosessionid`),
+		session.CfgSetCookie(true),
+		session.CfgGcLifeTime(3600),
+		session.CfgMaxLifeTime(3600),
+		session.CfgSecure(false),
+		session.CfgCookieLifeTime(3600),
+		session.CfgProviderConfig(redisConfig),
 	)
-	globalSessions, err := sess.NewManager("redis", sessionConfig)
+	globalSessions, err := session.NewManager("redis", sessionConfig)
 	if err != nil {
 		t.Log("could not create manager: ", err)
 		return nil, err

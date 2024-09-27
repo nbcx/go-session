@@ -7,7 +7,8 @@ import (
 	"sync"
 	"testing"
 	"time"
-	"write/common/go-session/sess"
+
+	"github.com/nbcx/go-session/session"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -135,17 +136,17 @@ func TestStoreSessionReleaseIfPresentAndSessionDestroy(t *testing.T) {
 	}
 }
 
-func setupSessionManager(t *testing.T) (*sess.Manager, error) {
-	sessionConfig := sess.NewManagerConfig(
-		sess.CfgCookieName(`gosessionid`),
-		sess.CfgSetCookie(true),
-		sess.CfgGcLifeTime(3600),
-		sess.CfgMaxLifeTime(3600),
-		sess.CfgSecure(false),
-		sess.CfgCookieLifeTime(3600),
-		sess.CfgProviderConfig("127.0.0.1:6379,100,,0,master"),
+func setupSessionManager(t *testing.T) (*session.Manager, error) {
+	sessionConfig := session.NewManagerConfig(
+		session.CfgCookieName(`gosessionid`),
+		session.CfgSetCookie(true),
+		session.CfgGcLifeTime(3600),
+		session.CfgMaxLifeTime(3600),
+		session.CfgSecure(false),
+		session.CfgCookieLifeTime(3600),
+		session.CfgProviderConfig("127.0.0.1:6379,100,,0,master"),
 	)
-	globalSessions, err := sess.NewManager("redis_sentinel", sessionConfig)
+	globalSessions, err := session.NewManager("redis_sentinel", sessionConfig)
 	if err != nil {
 		t.Log(err)
 		return nil, err

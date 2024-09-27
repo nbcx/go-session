@@ -7,8 +7,8 @@
 // Usage:
 // import(
 //
-//	_ "github.com/beego/beego/v2/server/web/session/redis_cluster"
-//	"github.com/beego/beego/v2/server/web/session"
+//	_ "github.com/nbcx/go-session/session/redis_cluster"
+//	"github.com/nbcx/go-session/session"
 //
 // )
 //
@@ -29,7 +29,7 @@ import (
 
 	rediss "github.com/redis/go-redis/v9"
 
-	"github.com/beego/beego/v2/server/web/session"
+	"github.com/nbcx/go-session/session"
 )
 
 var redispder = &Provider{}

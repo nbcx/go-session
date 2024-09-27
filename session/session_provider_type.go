@@ -1,4 +1,4 @@
-package sess
+package session
 
 type ProviderType string
 

@@ -7,8 +7,8 @@
 // Usage:
 // import(
 //
-//	_ "github.com/beego/beego/v2/server/web/session/couchbase"
-//	"github.com/beego/beego/v2/server/web/session"
+//	_ "github.com/nbcx/go-session/session/couchbase"
+//	"github.com/nbcx/go-session/session"
 //
 // )
 //
@@ -27,7 +27,7 @@ import (
 
 	couchbase "github.com/couchbase/go-couchbase"
 
-	"github.com/beego/beego/v2/server/web/session"
+	"github.com/nbcx/go-session/session"
 )
 
 var couchbpder = &Provider{}

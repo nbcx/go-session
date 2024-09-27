@@ -16,8 +16,8 @@
 // Usage:
 // import(
 //
-//	_ "github.com/beego/beego/v2/server/web/session/mysql"
-//	"github.com/beego/beego/v2/server/web/session"
+//	_ "github.com/nbcx/go-session/session/mysql"
+//	"github.com/nbcx/go-session/session"
 //
 // )
 //
@@ -36,7 +36,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/beego/beego/v2/server/web/session"
+	"github.com/nbcx/go-session/session"
 )
 
 var (

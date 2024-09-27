@@ -23,8 +23,8 @@
 // Usage:
 // import(
 //
-//	_ "github.com/beego/beego/v2/server/web/session/postgresql"
-//	"github.com/beego/beego/v2/server/web/session"
+//	_ "github.com/nbcx/go-session/session/postgresql"
+//	"github.com/nbcx/go-session/session"
 //
 // )
 //
@@ -43,7 +43,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/beego/beego/v2/server/web/session"
+	"github.com/nbcx/go-session/session"
 )
 
 var postgresqlpder = &Provider{}

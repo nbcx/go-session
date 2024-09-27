@@ -1,4 +1,4 @@
-package sess
+package session
 
 import (
 	"net/http"
