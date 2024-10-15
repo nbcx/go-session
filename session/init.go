@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-var sessions *Manager
+var manager *Manager
 
 func init() {
 	conf := new(Config)
@@ -30,10 +30,10 @@ func init() {
 
 // Set default session
 func Set(provideName string, config *Config) (err error) {
-	if sessions != nil {
-		sessions.Destroy()
+	if manager != nil {
+		manager.Destroy()
 	}
-	sessions, err = New(provideName, config)
+	manager, err = New(provideName, config)
 	return
 }
 
@@ -41,11 +41,19 @@ func Set(provideName string, config *Config) (err error) {
 func New(provideName string, config *Config) (*Manager, error) {
 	manager, err := NewManager(provideName, config)
 	if err == nil {
-		go sessions.GC()
+		go manager.GC()
 	}
 	return manager, err
 }
 
 func Start(w http.ResponseWriter, r *http.Request) (session Store, err error) {
-	return sessions.SessionStart(w, r)
+	return manager.SessionStart(w, r)
+}
+
+func Destroy(w http.ResponseWriter, r *http.Request) error {
+	return manager.SessionDestroy(w, r)
+}
+
+func RegenerateID(w http.ResponseWriter, r *http.Request) (Store, error) {
+	return manager.SessionRegenerateID(w, r)
 }
