@@ -107,7 +107,7 @@ func TestCfgGcLifeTime(t *testing.T) {
 		CfgGcLifeTime(value),
 	)
 
-	if c.Gclifetime != value {
+	if c.GcLifetime != value {
 		t.Error()
 	}
 }
@@ -138,7 +138,7 @@ func TestCfgMaxLifeTime(t *testing.T) {
 		CfgMaxLifeTime(value),
 	)
 
-	if c.Maxlifetime != value {
+	if c.MaxLifetime != value {
 		t.Error()
 	}
 }

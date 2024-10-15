@@ -26,7 +26,7 @@ func TestFileProviderSessionInit(t *testing.T) {
 	fp := &FileProvider{}
 
 	_ = fp.SessionInit(context.Background(), 180, sessionPath)
-	if fp.maxlifetime != 180 {
+	if fp.maxLifetime != 180 {
 		t.Error()
 	}
 

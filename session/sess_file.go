@@ -15,7 +15,7 @@ import (
 
 var (
 	filepder      = &FileProvider{}
-	gcmaxlifetime int64
+	gcMaxLifetime int64
 )
 
 // FileSessionStore File session store
@@ -108,14 +108,14 @@ func (fs *FileSessionStore) releaseSession(_ context.Context, _ http.ResponseWri
 // FileProvider File session provider
 type FileProvider struct {
 	lock        sync.RWMutex
-	maxlifetime int64
+	maxLifetime int64
 	savePath    string
 }
 
 // SessionInit Init file session provider.
 // savePath sets the session files path.
-func (fp *FileProvider) SessionInit(ctx context.Context, maxlifetime int64, savePath string) error {
-	fp.maxlifetime = maxlifetime
+func (fp *FileProvider) SessionInit(ctx context.Context, maxLifetime int64, savePath string) error {
+	fp.maxLifetime = maxLifetime
 	fp.savePath = savePath
 	return nil
 }
@@ -206,7 +206,7 @@ func (fp *FileProvider) SessionGC(context.Context) {
 	filepder.lock.Lock()
 	defer filepder.lock.Unlock()
 
-	gcmaxlifetime = fp.maxlifetime
+	gcMaxLifetime = fp.maxLifetime
 	filepath.Walk(fp.savePath, gcpath)
 }
 
@@ -291,7 +291,7 @@ func gcpath(path string, info os.FileInfo, err error) error {
 	if info.IsDir() {
 		return nil
 	}
-	if (info.ModTime().Unix() + gcmaxlifetime) < time.Now().Unix() {
+	if (info.ModTime().Unix() + gcMaxLifetime) < time.Now().Unix() {
 		os.Remove(path)
 	}
 	return nil

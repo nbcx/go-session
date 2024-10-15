@@ -83,7 +83,7 @@ func TestParseConfig(t *testing.T) {
 	if cf.CookieName != "gosessionid" {
 		t.Fatal("parseconfig get cookiename error")
 	}
-	if cf.Gclifetime != 3600 {
+	if cf.GcLifetime != 3600 {
 		t.Fatal("parseconfig get gclifetime error")
 	}
 
@@ -97,7 +97,7 @@ func TestParseConfig(t *testing.T) {
 	if cf2.CookieName != "gosessionid" {
 		t.Fatal("parseconfig get cookiename error")
 	}
-	if cf2.Gclifetime != 3600 {
+	if cf2.GcLifetime != 3600 {
 		t.Fatal("parseconfig get gclifetime error")
 	}
 	if cf2.EnableSetCookie {

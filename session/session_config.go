@@ -10,8 +10,8 @@ type Config struct {
 	EnableSidInHTTPHeader   bool          `json:"EnableSidInHTTPHeader"`
 	EnableSidInURLQuery     bool          `json:"EnableSidInURLQuery"`
 	CookieName              string        `json:"cookieName"`
-	Gclifetime              int64         `json:"gclifetime"`
-	Maxlifetime             int64         `json:"maxLifetime"`
+	GcLifetime              int64         `json:"gclifetime"`
+	MaxLifetime             int64         `json:"maxLifetime"`
 	CookieLifeTime          int           `json:"cookieLifeTime"`
 	ProviderConfig          string        `json:"providerConfig"`
 	Domain                  string        `json:"domain"`
@@ -68,14 +68,14 @@ func CfgSetCookie(enable bool) ManagerConfigOpt {
 // CfgGcLifeTime set session gc lift time
 func CfgGcLifeTime(lifeTime int64) ManagerConfigOpt {
 	return func(config *Config) {
-		config.Gclifetime = lifeTime
+		config.GcLifetime = lifeTime
 	}
 }
 
 // CfgMaxLifeTime set session lift time
 func CfgMaxLifeTime(lifeTime int64) ManagerConfigOpt {
 	return func(config *Config) {
-		config.Maxlifetime = lifeTime
+		config.MaxLifetime = lifeTime
 	}
 }
 

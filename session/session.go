@@ -42,10 +42,10 @@ type Store interface {
 // Provider contains global session methods and saved SessionStores.
 // it can operate a SessionStore by its id.
 type Provider interface {
-	SessionInit(ctx context.Context, gclifetime int64, config string) error
+	SessionInit(ctx context.Context, gcLifetime int64, config string) error
 	SessionRead(ctx context.Context, sid string) (Store, error)
 	SessionExist(ctx context.Context, sid string) (bool, error)
-	SessionRegenerate(ctx context.Context, oldsid, sid string) (Store, error)
+	SessionRegenerate(ctx context.Context, oldSid, sid string) (Store, error)
 	SessionDestroy(ctx context.Context, sid string) error
 	SessionAll(ctx context.Context) int // get all active session
 	SessionGC(ctx context.Context)
@@ -55,6 +55,18 @@ var provides = make(map[string]Provider)
 
 // SLogger a helpful variable to log information about session
 var SLogger = NewSessionLog(os.Stderr)
+
+// Log implement the log.Logger
+type Log struct {
+	*log.Logger
+}
+
+// NewSessionLog set io.Writer to create a Logger for session.
+func NewSessionLog(out io.Writer) *Log {
+	sl := new(Log)
+	sl.Logger = log.New(out, "[SESSION]", 1e9)
+	return sl
+}
 
 // Register makes a session provide available by the provided name.
 // If provider is nil, it panic
@@ -78,6 +90,7 @@ func GetProvider(name string) (Provider, error) {
 type Manager struct {
 	provider Provider
 	config   *Config
+	timer    *time.Timer
 }
 
 // NewManager Create new Manager with provider name and json config string.
@@ -98,8 +111,8 @@ func NewManager(provideName string, cf *Config) (*Manager, error) {
 		return nil, fmt.Errorf("session: unknown provide %q (forgotten import?)", provideName)
 	}
 
-	if cf.Maxlifetime == 0 {
-		cf.Maxlifetime = cf.Gclifetime
+	if cf.MaxLifetime == 0 {
+		cf.MaxLifetime = cf.GcLifetime
 	}
 
 	if cf.EnableSidInHTTPHeader {
@@ -114,7 +127,7 @@ func NewManager(provideName string, cf *Config) (*Manager, error) {
 		}
 	}
 
-	err := provider.SessionInit(context.Background(), cf.Maxlifetime, cf.ProviderConfig)
+	err := provider.SessionInit(context.Background(), cf.MaxLifetime, cf.ProviderConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -123,10 +136,7 @@ func NewManager(provideName string, cf *Config) (*Manager, error) {
 		cf.SessionIDLength = 16
 	}
 
-	return &Manager{
-		provider,
-		cf,
-	}, nil
+	return &Manager{provider, cf, nil}, nil
 }
 
 // GetProvider return current manager's provider
@@ -224,7 +234,7 @@ func (manager *Manager) SessionStart(w http.ResponseWriter, r *http.Request) (se
 }
 
 // SessionDestroy Destroy session by its id in http request cookie.
-func (manager *Manager) SessionDestroy(w http.ResponseWriter, r *http.Request) {
+func (manager *Manager) SessionDestroy(w http.ResponseWriter, r *http.Request) (err error) {
 	if manager.config.EnableSidInHTTPHeader {
 		r.Header.Del(manager.config.SessionNameInHTTPHeader)
 		w.Header().Del(manager.config.SessionNameInHTTPHeader)
@@ -236,7 +246,7 @@ func (manager *Manager) SessionDestroy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sid, _ := url.QueryUnescape(cookie.Value)
-	manager.provider.SessionDestroy(context.Background(), sid)
+	err = manager.provider.SessionDestroy(context.Background(), sid)
 	if manager.config.EnableSetCookie {
 		expiration := time.Now()
 		cookie = &http.Cookie{
@@ -251,6 +261,7 @@ func (manager *Manager) SessionDestroy(w http.ResponseWriter, r *http.Request) {
 
 		http.SetCookie(w, cookie)
 	}
+	return
 }
 
 // GetSessionStore Get SessionStore by its id.
@@ -262,8 +273,15 @@ func (manager *Manager) GetSessionStore(sid string) (sessions Store, err error) 
 // GC Start session gc process.
 // it can do gc in times after gc lifetime.
 func (manager *Manager) GC() {
-	manager.provider.SessionGC(nil)
-	time.AfterFunc(time.Duration(manager.config.Gclifetime)*time.Second, func() { manager.GC() })
+	manager.provider.SessionGC(context.Background())
+	manager.timer = time.AfterFunc(time.Duration(manager.config.GcLifetime)*time.Second, func() { manager.GC() })
+}
+
+func (manager *Manager) Destroy() {
+	if manager.timer != nil {
+		manager.timer.Stop()
+	}
+	manager.provider.SessionGC(context.Background())
 }
 
 // SessionRegenerateID Regenerate a session id for this SessionStore whose id is saving in http request.
@@ -320,7 +338,7 @@ func (manager *Manager) SessionRegenerateID(w http.ResponseWriter, r *http.Reque
 
 // GetActiveSession Get all active sessions count number.
 func (manager *Manager) GetActiveSession() int {
-	return manager.provider.SessionAll(nil)
+	return manager.provider.SessionAll(context.Background())
 }
 
 // SetSecure Set cookie with https.
@@ -349,16 +367,4 @@ func (manager *Manager) isSecure(req *http.Request) bool {
 		return false
 	}
 	return true
-}
-
-// Log implement the log.Logger
-type Log struct {
-	*log.Logger
-}
-
-// NewSessionLog set io.Writer to create a Logger for session.
-func NewSessionLog(out io.Writer) *Log {
-	sl := new(Log)
-	sl.Logger = log.New(out, "[SESSION]", 1e9)
-	return sl
 }
