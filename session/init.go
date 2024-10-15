@@ -22,7 +22,7 @@ func init() {
 	conf.EnableSidInURLQuery = false
 	conf.CookieSameSite = 1
 	conf.SessionIDPrefix = ""
-
+	Register("memory", mempder)
 	if err := Set("memory", conf); err != nil {
 		panic(err)
 	}
@@ -44,6 +44,10 @@ func New(provideName string, config *Config) (*Manager, error) {
 		go manager.GC()
 	}
 	return manager, err
+}
+
+func Default() *Manager {
+	return manager
 }
 
 func Start(w http.ResponseWriter, r *http.Request) (session Store, err error) {
